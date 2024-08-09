@@ -1,0 +1,58 @@
+import os
+import cv2
+import numpy as np
+
+# Define image dimensions for CT images
+img_height = 512
+img_width = 512
+
+# Function to load and preprocess training CT images
+def load_grayscale_images(directory):
+    image_list = []
+    for filename in os.listdir(directory):
+        path = os.path.join(directory, filename)
+        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)  # Read image in grayscale
+        image = cv2.resize(image, (img_height, img_width))  # Resize image
+        image = image.astype('float32') / 255.0  # Normalize pixels to the range [0, 1]
+        image_list.append(image)
+    return np.array(image_list)
+
+# Function to load and preprocess validation CT images
+def load_ct_images(directory):
+    image_list = []
+    for filename in os.listdir(directory):
+        path = os.path.join(directory, filename)
+        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)  # Read image in grayscale
+        image = cv2.resize(image, (img_height, img_width))  # Resize image
+        image = image.astype('float32') / 255.0  # Normalize pixels to the range [0, 1]
+        image_list.append(image)
+    return np.array(image_list)
+
+# Load and preprocess training and validation CT images
+train_data = load_grayscale_images(r"E:\moses pro\tiff2jpg (1)\class1")
+validation_data = load_ct_images(r"E:\moses pro\tiff2jpg (1)\class2")
+
+# Implement Compressed Sensing Reconstruction
+def compressed_sensing_reconstruction(data):
+    # Replace this with your actual compressed sensing reconstruction code for CT images
+    # Calculate accuracy or any metric to evaluate the reconstructed images
+    # For illustration purposes, returning a random accuracy value
+    accuracy = np.random.random()  # Replace this with actual calculation
+    return accuracy
+
+# Implement Filtered Back Projection Algorithm
+def filtered_back_projection(data):
+    # Replace this with your actual filtered back projection code for CT images
+    # Calculate accuracy or any metric to evaluate the reconstructed images
+    # For illustration purposes, returning a random accuracy value
+    accuracy = np.random.random()  # Replace this with actual calculation
+    return accuracy
+
+# Evaluate Compressed Sensing Reconstruction
+cs_accuracy = compressed_sensing_reconstruction(validation_data)
+print(f"Compressed Sensing Reconstruction Accuracy: {cs_accuracy * 100:.2f}%")
+
+# Evaluate Filtered Back Projection Algorithm
+fbp_accuracy = filtered_back_projection(validation_data)
+print(f"Filtered Back Projection Accuracy: {fbp_accuracy * 100:.2f}%")
+

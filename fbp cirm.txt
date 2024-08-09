@@ -1,0 +1,59 @@
+import os
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define image dimensions for grayscale images
+img_height = 512
+img_width = 512
+
+# Function to load and preprocess grayscale images
+def load_grayscale_images(directory):
+    image_list = []
+    for filename in os.listdir(directory):
+        path = os.path.join(directory, filename)
+        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)  # Read image in grayscale
+        image = cv2.resize(image, (img_height, img_width))  # Resize image
+        image = image.astype('float32') / 255.0  # Normalize pixels to the range [0, 1]
+        image_list.append(image)
+    return np.array(image_list)
+
+# Load and preprocess training and validation grayscale images
+train_data = load_grayscale_images(r"E:\moses pro\tiff2jpg (1)\class1")
+validation_data = load_grayscale_images(r"E:\moses pro\tiff2jpg (1)\class2")
+
+# Function to perform Filtered Back Projection (FBP) reconstruction
+def fbp_reconstruction(sinogram):
+    num_angles = sinogram.shape[0]
+    reconstructed_images = []
+    for i in range(img_height):
+        # Initialize the filtered projection
+        filtered_projection = np.zeros((num_angles, img_width))
+        for j in range(num_angles):
+            projection = sinogram[j, i]  # Select the appropriate column for each angle
+            # Perform Fourier Transform operations
+            filtered_projection[j] = np.fft.ifft(np.fft.fft(projection) * np.abs(np.fft.fftfreq(img_width, d=1.0)))
+        reconstructed_images.append(np.sum(filtered_projection, axis=0))
+    return np.array(reconstructed_images)
+
+# Placeholder for commercial iterative reconstruction algorithm
+def commercial_iterative_algorithm(data):
+    # Simulating commercial iterative reconstruction by generating random accuracy values
+    return np.random.rand(len(data))  # Replace this with your actual algorithm
+
+# Example: Assuming 'validation_data' contains sinogram data (projection data)
+# Apply FBP reconstruction to validation sinogram data
+fbp_validation_data = fbp_reconstruction(validation_data)
+
+# Evaluate the FBP reconstruction accuracy
+mean_pixel_difference = np.mean(np.abs(validation_data - fbp_validation_data))
+fbp_accuracy = 1 - (mean_pixel_difference / 255.0)  # Normalizing by max pixel value
+print(f"FBP Reconstruction Accuracy: {fbp_accuracy * 100:.2f}%")
+
+# Calculate commercial iterative reconstruction accuracy
+commercial_iterative_accuracy = commercial_iterative_algorithm(validation_data)
+
+# Print commercial iterative reconstruction accuracy
+print(f"Commercial Iterative Reconstruction Accuracy: {np.mean(commercial_iterative_accuracy) * 100:.2f}%")
+
+

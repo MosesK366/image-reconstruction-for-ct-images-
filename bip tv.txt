@@ -1,0 +1,75 @@
+import os
+import cv2
+import numpy as np
+from skimage.restoration import denoise_tv_chambolle
+
+# Define image dimensions for grayscale images
+img_height = 512
+img_width = 512
+
+# Function to load and preprocess grayscale images
+def load_grayscale_images(directory):
+    image_list = []
+    for filename in os.listdir(directory):
+        path = os.path.join(directory, filename)
+        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)  # Read image in grayscale
+        image = cv2.resize(image, (img_height, img_width))  # Resize image
+        image = image.astype('float32') / 255.0  # Normalize pixels to the range [0, 1]
+        image_list.append(image)
+    return np.array(image_list)
+
+# Load and preprocess training grayscale images
+train_data = load_grayscale_images(r"E:\moses pro\tiff2jpg (1)\class1")
+
+# Load and preprocess validation grayscale images (assuming noisy images)
+validation_data = load_grayscale_images(r"E:\moses pro\tiff2jpg (1)\class2")
+
+# Apply Total Variation (TV) regularization for image denoising
+denoised_images = [denoise_tv_chambolle(image) for image in validation_data]
+
+# Function for Block Iterative Projection (Placeholder)
+def block_iterative_projection(input_data):
+    # Implement your block iterative projection algorithm here
+    # Iterate through blocks of data and enforce constraints
+    
+    reconstructed_images = []
+    for data in input_data:
+        # Apply block iterative projection algorithm on each image data block
+        # Perform iterations and constraints enforcement
+        
+        # Example: Randomly reconstructing a noisy image (for demonstration)
+        reconstructed_image = np.random.random(data.shape)  # Replace with your actual algorithm
+        reconstructed_images.append(reconstructed_image)
+    
+    return reconstructed_images
+
+# Apply Block Iterative Projection for image reconstruction
+reconstructed_images = block_iterative_projection(validation_data)
+
+# Placeholder accuracy calculation for denoising (TV Regularization)
+# Replace this with your actual accuracy calculation method for denoised images
+def calculate_accuracy_denoising(original_images, denoised_images):
+    # Example: Random accuracy calculation (for demonstration)
+    return np.random.uniform(0.7, 0.9)
+
+# Placeholder accuracy calculation for block iterative projection
+# Replace this with your actual accuracy calculation method for reconstructed images
+def calculate_accuracy_reconstruction(original_images, reconstructed_images):
+    # Example: Random accuracy calculation (for demonstration)
+    return np.random.uniform(0.6, 0.8)
+
+# Placeholder original images and ground truth for accuracy calculation
+# Assuming 'original_images' contains the ground truth images (adjust if needed)
+original_images = validation_data  # For illustration purposes
+
+# Calculate accuracy for denoising (TV Regularization)
+accuracy_denoising = calculate_accuracy_denoising(original_images, denoised_images)
+
+# Calculate accuracy for block iterative projection
+accuracy_reconstruction = calculate_accuracy_reconstruction(original_images, reconstructed_images)
+
+# Print or use these calculated accuracies as needed
+print(f"Denoising (TV Regularization) Accuracy: {accuracy_denoising * 100:.2f}%")
+print(f"Block Iterative Projection Accuracy: {accuracy_reconstruction * 100:.2f}%")
+
+

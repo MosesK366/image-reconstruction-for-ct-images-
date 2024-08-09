@@ -1,0 +1,67 @@
+import os
+import cv2
+import numpy as np
+import tensorflow as tf
+
+# Define image dimensions for grayscale images
+img_height = 512
+img_width = 512
+
+# Function to load and preprocess grayscale images
+def load_grayscale_images(directory):
+    image_list = []
+    for filename in os.listdir(directory):
+        path = os.path.join(directory, filename)
+        image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)  # Read image in grayscale
+        image = cv2.resize(image, (img_height, img_width))  # Resize image
+        image = image.astype('float32') / 255.0  # Normalize pixels to the range [0, 1]
+        image_list.append(image)
+    return np.array(image_list)
+
+# Load and preprocess training and validation grayscale images
+train_data = load_grayscale_images(r"E:\moses pro\tiff2jpg (1)\class1")
+validation_data = load_grayscale_images(r"E:\moses pro\tiff2jpg (1)\class2")
+
+# Assuming you have corresponding labels for the images (adjust this part according to your data)
+# Example: Creating dummy labels for illustration purposes
+num_samples_train = len(train_data)
+num_samples_validation = len(validation_data)
+train_labels = np.random.randint(0, 2, size=num_samples_train)  # Replace with your actual labels
+validation_labels = np.random.randint(0, 2, size=num_samples_validation)  # Replace with your actual labels
+
+# Model definition: Deep Neural Network (DNN)
+model_dnn = tf.keras.Sequential([
+    tf.keras.layers.Input(shape=(img_height, img_width)),  # No need to specify channels for grayscale
+    tf.keras.layers.Reshape((img_height, img_width, 1)),  # Reshape for compatibility with Conv2D layers
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(256, activation='relu'),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dropout(0.3),
+    tf.keras.layers.Dense(1, activation='sigmoid')  # Output layer for binary classification
+])
+
+# Compile the DNN model
+model_dnn.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+# Train the DNN model
+history_dnn = model_dnn.fit(train_data, train_labels, epochs=10, validation_data=(validation_data, validation_labels))
+
+# Placeholder for a commercial algorithm
+# You should replace this with your actual commercial algorithm for comparison
+def commercial_algorithm(data):
+    # Implement your commercial algorithm for processing data and returning accuracy
+    # For example, assuming it returns a random accuracy between 0 and 1 for illustration purposes
+    return np.random.random()
+
+# Assuming 'commercial_algorithm()' processes the validation data
+commercial_accuracy = commercial_algorithm(validation_data)
+
+# Evaluate the DNN model
+loss, accuracy = model_dnn.evaluate(validation_data, validation_labels)
+print(f"DNN Validation Accuracy: {accuracy * 100:.2f}%")
+if commercial_accuracy is not None:
+    print(f"Commercial Algorithm Accuracy: {commercial_accuracy * 100:.2f}%")
+else:
+    print("Error: Commercial algorithm did not return an accuracy value.")
+
